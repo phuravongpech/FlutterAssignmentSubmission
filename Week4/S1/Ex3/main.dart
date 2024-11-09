@@ -19,9 +19,7 @@ void main() {
         child: const Column(
           children: [
             CustomButton(
-                label: 'hi',
-                icon: Icons.cabin,
-                type: ButtonType.primary),
+                label: 'hi', icon: Icons.cabin, type: ButtonType.primary),
             CustomButton(
               label: 'hello',
               icon: Icons.headphones,
@@ -33,7 +31,13 @@ void main() {
               icon: Icons.do_disturb_alt,
               type: ButtonType.disabled,
               position: Position.right,
-            )
+            ),
+            CustomButton(
+              label: 'sei hg',
+              icon: Icons.do_disturb_alt,
+              type: ButtonType.disabled,
+              position: Position.right,
+            ),
           ],
         ),
       ),
