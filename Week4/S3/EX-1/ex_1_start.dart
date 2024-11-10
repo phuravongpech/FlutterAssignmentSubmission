@@ -26,7 +26,23 @@ void main() => runApp(MaterialApp(
         appBar: AppBar(
           title: const Text("Custom buttons"),
         ),
-        body: const Center(child: Button()),
+        body: const Column(
+          children: [
+            Button(),
+            SizedBox(
+              height: 30,
+            ),
+            Button(),
+            SizedBox(
+              height: 30,
+            ),
+            Button(),
+            SizedBox(
+              height: 30,
+            ),
+            Button(),
+          ],
+        ),
       ),
     ));
 
