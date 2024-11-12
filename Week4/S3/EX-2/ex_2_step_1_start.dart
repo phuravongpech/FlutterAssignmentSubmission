@@ -55,7 +55,13 @@ class _CardState extends State<Card> {
               child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(widget.title),
+              Text(
+                widget.title,
+                style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red),
+              ),
               Text(widget.description),
             ],
           )),

@@ -26,22 +26,25 @@ void main() => runApp(MaterialApp(
         appBar: AppBar(
           title: const Text("Custom buttons"),
         ),
-        body: const Column(
-          children: [
-            Button(),
-            SizedBox(
-              height: 30,
-            ),
-            Button(),
-            SizedBox(
-              height: 30,
-            ),
-            Button(),
-            SizedBox(
-              height: 30,
-            ),
-            Button(),
-          ],
+        body: const Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Button(),
+              SizedBox(
+                height: 30,
+              ),
+              Button(),
+              SizedBox(
+                height: 30,
+              ),
+              Button(),
+              SizedBox(
+                height: 30,
+              ),
+              Button(),
+            ],
+          ),
         ),
       ),
     ));

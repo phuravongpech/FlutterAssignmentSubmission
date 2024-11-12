@@ -115,7 +115,7 @@ class WeatherForecastCard extends StatelessWidget {
             children: [
               Text(
                 '${temp.min}\u00B0',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               Text('${temp.max}\u00B0 '),
             ],

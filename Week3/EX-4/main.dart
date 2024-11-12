@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import '../widget/gradient_button.dart';
 
-void onPressed() {
-  print('hi');
-}
-
 void main() {
   runApp(MaterialApp(
     home: Container(
@@ -30,7 +26,6 @@ void main() {
             end: Colors.purple,
           ),
           SizedBox(height: 20),
-          TextButton(onPressed: onPressed, child: Text('hello')),
         ],
       ),
     ),
