@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'model/profile_tile_model.dart';
 import 'data/profile_data.dart';
 
+List<ProfileData> profileData = [ronanProfile, vongProfile, amazonProfile];
+
 void main() {
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -16,11 +18,7 @@ void main() {
           centerTitle: true,
         ),
         body: ListView(
-          children: [
-            ProfileApp(data: ronanProfile),
-            ProfileApp(data: vongProfile),
-            ProfileApp(data: amazonProfile),
-          ],
+          children: [...profileData.map((pf) => ProfileApp(data: pf))],
         ),
       )));
 }

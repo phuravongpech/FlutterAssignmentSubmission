@@ -4,6 +4,8 @@ import 'model/jokes_model.dart';
 
 Color appColor = Colors.green[300] as Color;
 
+List<Jokes> joke = [j1, j2, j3];
+
 void main() => runApp(const FavoriteCardApp());
 
 class FavoriteCardApp extends StatefulWidget {
@@ -31,24 +33,16 @@ class _FavoriteCardAppState extends State<FavoriteCardApp> {
           backgroundColor: appColor,
           title: const Text("Favorite Jokes "),
         ),
-        body: Column(
-          children: [
-            FavoriteCard(
-              jokes: j1,
-              isFavorite: j1 == favJoke,
-              buttonPressed: () => setFavoriteJoke(j1),
-            ),
-            FavoriteCard(
-              jokes: j2,
-              isFavorite: j2 == favJoke,
-              buttonPressed: () => setFavoriteJoke(j2),
-            ),
-            FavoriteCard(
-              jokes: j3,
-              isFavorite: j3 == favJoke,
-              buttonPressed: () => setFavoriteJoke(j3),
-            ),
-          ],
+        body: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              ...joke.map((joke) => FavoriteCard(
+                  jokes: joke,
+                  buttonPressed: () => setFavoriteJoke(joke),
+                  isFavorite: joke == favJoke))
+            ],
+          ),
         ),
       ),
     );

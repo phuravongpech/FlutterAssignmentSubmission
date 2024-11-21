@@ -22,7 +22,7 @@ void main() {
             for (var i = 0; i < colors.length; i++) Text(colors[i]),
             const Label("Method 2: Map", bold: true),
             ...colors.map((color) => Text(color)),
-            const Label("Method 23: Dedicated Function", bold: true),
+            const Label("Method 3: Dedicated Function", bold: true),
             ...getColors(),
             //...spread operator cuz getColors return a list of widgets
             //we need to use that in order to spread widgets into each individual commponents
