@@ -4,9 +4,8 @@ import 'package:flutter/material.dart';
 import '../data/dummy_items.dart';
 import '../models/grocery_item.dart';
 import 'new_item.dart';
-import 'package:uuid/uuid.dart';
 
-final Uuid uuid = Uuid();
+enum Mode { selection, normal }
 
 class GroceryList extends StatefulWidget {
   const GroceryList({super.key});
@@ -16,7 +15,18 @@ class GroceryList extends StatefulWidget {
 }
 
 class _GroceryListState extends State<GroceryList> {
-  Future<void> _addItem() async {
+  late Mode mode;
+
+  // Map<String, bool> selectedItem = {};
+  List<String> selectedItems = [];
+
+  @override
+  void initState() {
+    super.initState();
+    mode = Mode.normal;
+  }
+
+  void _addItem() async {
     final passedData = await Navigator.of(context).push<GroceryItem>(
       MaterialPageRoute(
         builder: (ctx) => const NewItem(),
@@ -32,71 +42,156 @@ class _GroceryListState extends State<GroceryList> {
     }
   }
 
+  void _editItem(GroceryItem groceryItem) async {
+    final updatedItem = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => NewItem(
+                  groceryItem: groceryItem,
+                )));
+
+    print(updatedItem.name);
+    final index =
+        dummyGroceryItems.indexWhere((item) => item.id == updatedItem.id);
+    setState(() {
+      dummyGroceryItems[index] = updatedItem;
+    });
+  }
+
+  void changeMode() {
+    setState(() {
+      mode = mode == Mode.normal ? Mode.selection : Mode.normal;
+      if (mode == Mode.normal) {
+        selectedItems.clear();
+      }
+    });
+  }
+
+  void toogleSelectedItem(String itemId) {
+    setState(() {
+      if (selectedItems.contains(itemId)) {
+        selectedItems.remove(itemId);
+      } else {
+        selectedItems.add(itemId);
+      }
+    });
+    print(selectedItems);
+  }
+
+  void deletedSelectedItem() {
+    setState(() {
+      dummyGroceryItems.removeWhere((item) => selectedItems.contains(item.id));
+      selectedItems.clear();
+      mode = Mode.normal;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget content = const Center(child: Text('No items added yet.'));
 
     if (dummyGroceryItems.isNotEmpty) {
-      content = ListView.builder(
+      content = ReorderableListView.builder(
         itemCount: dummyGroceryItems.length,
-        itemBuilder: (ctx, index) =>
-            GroceryTile(dummyGroceryItems[index], onEdit: (updatedItem) {
+        itemBuilder: (ctx, index) => GroceryTile(
+          dummyGroceryItems[index],
+          key: UniqueKey(),
+          onEdit: _editItem,
+          mode: mode,
+          onLongPress: changeMode,
+          onToggleSelectedItem: toogleSelectedItem,
+          isSelected: selectedItems.contains(dummyGroceryItems[index].id),
+        ),
+        onReorder: (oldIndex, newIndex) {
           setState(() {
-            final index = dummyGroceryItems
-                .indexWhere((item) => item.id == updatedItem.id);
-            dummyGroceryItems[index] = updatedItem;
+            if (oldIndex < newIndex) {
+              newIndex -= 1;
+            }
+            final GroceryItem item = dummyGroceryItems.removeAt(oldIndex);
+            dummyGroceryItems.insert(newIndex, item);
           });
-        }),
+        },
       );
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Your Groceries'),
-        actions: [
-          IconButton(
-            onPressed: _addItem,
-            icon: const Icon(Icons.add),
-          ),
-        ],
-      ),
+      appBar: mode == Mode.normal
+          ? AppBar(
+              title: const Text('Your Groceries'),
+              actions: [
+                IconButton(
+                  onPressed: _addItem,
+                  icon: const Icon(Icons.add),
+                ),
+              ],
+            )
+          : AppBar(
+              title: Text('${selectedItems.length} items(s) selected'),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_rounded),
+                onPressed: () {
+                  setState(() {
+                    mode = Mode.normal;
+                  });
+                },
+              ),
+              actions: [
+                IconButton(
+                  onPressed: deletedSelectedItem,
+                  icon: const Icon(Icons.delete),
+                ),
+              ],
+            ),
       body: content,
     );
   }
 }
 
 class GroceryTile extends StatelessWidget {
-  const GroceryTile(this.groceryItem, {super.key, required this.onEdit});
+  const GroceryTile(this.groceryItem,
+      {super.key,
+      required this.onEdit,
+      required this.mode,
+      required this.onLongPress,
+      required this.isSelected,
+      required this.onToggleSelectedItem});
 
   final GroceryItem groceryItem;
   final Function(GroceryItem) onEdit;
+  final VoidCallback onLongPress;
+  final Mode mode;
+  final bool isSelected; // Indicates if the item is selected
+  final Function(String)
+      onToggleSelectedItem; // Callback for toggling selection
 
   @override
   Widget build(BuildContext context) {
-    void editItem() async {
-      final updatedItem = await Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => NewItem(
-                    groceryItem: groceryItem,
-                  )));
-
-      print(updatedItem.name);
-      // Find and update the item in dummyGroceryItems
-      onEdit(updatedItem);
-    }
-
     return ListTile(
       title: Text(groceryItem.name),
-      leading: Container(
-        width: 24,
-        height: 24,
-        color: groceryItem.category.color,
-      ),
-      trailing: Text(
-        groceryItem.quantity.toString(),
-      ),
-      onTap: editItem,
+      onLongPress: onLongPress,
+      leading: mode == Mode.normal
+          ? Container(
+              width: 24,
+              height: 24,
+              color: groceryItem.category.color,
+            )
+          : Checkbox(
+              value: isSelected, // Use the selection state from parent
+              onChanged: (bool? value) {
+                if (value != null) {
+                  onToggleSelectedItem(
+                      groceryItem.id); // Toggle selection state
+                }
+              },
+            ),
+      trailing: Text(groceryItem.quantity.toString()),
+      onTap: () {
+        if (mode == Mode.normal) {
+          onEdit(groceryItem);
+        } else {
+          onToggleSelectedItem(groceryItem.id); // Toggle selection state
+        }
+      },
     );
   }
 }

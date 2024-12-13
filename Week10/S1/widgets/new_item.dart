@@ -3,7 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:vong_flutter/Week10/S1/models/grocery_item.dart';
 import '../models/grocery_category.dart';
-import 'grocery_list.dart';
+import 'package:uuid/uuid.dart';
+
+const Uuid uuid = Uuid();
 
 enum ScreenMode { editing, creating }
 
